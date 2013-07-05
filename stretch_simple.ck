@@ -1,14 +1,27 @@
 SndBuf  buff => FFT fft =^ IFFT ifft => blackhole;
-Impulse imp => dac => WvOut w => blackhole;
+Impulse imp => LPF lpf => blackhole;
+dac => WvOut w => blackhole;
+lpf => PitShift ps1 => dac;
+lpf => PitShift ps2 => dac;
+lpf => PitShift ps3 => dac;
+
+1000 => lpf.freq;
+//0.6 => g1.gain;
+0.25 => ps1.shift;
+0.5 => ps1.gain;
+2 => ps2.shift;
+0.8 => ps2.gain;
+0.125 => ps3.shift;
+0.5 => ps3.gain;
 
 30.0 => float stretch;
-3::second => dur window_dur;
+5::second => dur window_dur;
 
-me.sourceDir() + "/full_08 Koto Song.wav" => string filename;
+me.sourceDir() + "/cc.wav" => string filename;
 buff.read(filename);
 buff.samples() / (buff.length() / 1::second) => float sample_rate;
 
-me.sourceDir() + "/output.wav" => w.wavFilename;
+me.sourceDir() + "/output_cc.wav" => w.wavFilename;
 
 ((window_dur / 1::second) * sample_rate) $ int => int window_size;
 (window_size / 2) $ int => int half_window_size;
